@@ -22,7 +22,6 @@
 #include "tao/tao_utf8.h"
 #include "tao/tao_info.h"
 #include "tao/module_api.h"
-#include <sstream>
 #include <QtNetwork>
 #include <map>
 
@@ -45,7 +44,7 @@ public:
     struct RequestReply
     {
         RequestReply() : reply(NULL), result() {}
-        ~RequestReply() { if (reply) reply->deleteLater(); }
+        ~RequestReply() { reply->deleteLater(); }
         QNetworkReply *         reply;
         text                    result;
     };
@@ -61,17 +60,17 @@ public:
 static text errorText(QNetworkReply::NetworkError error);
 
 
-static bool hasLicense()
+static bool hasLicence()
 // ----------------------------------------------------------------------------
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
 {
-    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.003");
+    static bool result = tao->checkLicense("NetworkAccess 1.0", false);
     return result;
 }
 
 
-text getUrlRawData(Tree_p self, Text_p urlText)
+Text_p getUrlText(Tree_p self, Text_p urlText)
 // ----------------------------------------------------------------------------
 //   State machine to complete a network request repeatedly
 // ----------------------------------------------------------------------------
@@ -88,7 +87,7 @@ text getUrlRawData(Tree_p self, Text_p urlText)
     NetworkAccessInfo::RequestReply &rr = info->pending[urlText->value];
     if (!rr.reply)
     {
-        QUrl url(+urlText->value);
+        QUrl url = QUrl(+urlText->value);
         QNetworkRequest req(url);
         rr.reply = info->network.get(req);
     }
@@ -101,9 +100,7 @@ text getUrlRawData(Tree_p self, Text_p urlText)
         // No error, get data
         if (reply->isFinished())
         {
-            QByteArray rawData = reply->readAll();
-            QString text = QString::fromUtf8(rawData.constData(),
-                                             rawData.size());
+            QString text(reply->readAll());
             rr.result = +text;
             reply->deleteLater();
             rr.reply = NULL;
@@ -120,22 +117,11 @@ text getUrlRawData(Tree_p self, Text_p urlText)
     } // Error cases
 
     // Licence check
-    hasLicense();
-    text result = rr.result;
+    text result = (hasLicence() || tao->blink(1.5, 1.0, 300))
+        ? rr.result
+        : "[Unlicenced]";
 
-    IFTRACE(netaccess)
-        std::cerr << "URL " << urlText->value << ": " << rr.result << "\n";
-    return result;
-}
-
-
-Text_p getUrlText(Tree_p self, Text_p urlText)
-// ----------------------------------------------------------------------------
-//   Interface to XL runtime
-// ----------------------------------------------------------------------------
-{
     // Build a text with the result
-    text result = getUrlRawData(self, urlText);
     return new Text(result, "\"", "\"", self->Position());
 }
 
@@ -221,44 +207,6 @@ text errorText(QNetworkReply::NetworkError error)
     default:
         return "unknown error";
     }
-}
-
-
-struct GetUrlDataInfo : XL::Info
-// ----------------------------------------------------------------------------
-//   Information about the data that was loaded
-// ----------------------------------------------------------------------------
-{
-    GetUrlDataInfo() {}
-    text        source;
-};
-
-
-Tree_p getUrlData(Context *context, Tree *self,
-                  Text_p url, text prefix, text fieldSeps, text recordSeps)
-// ----------------------------------------------------------------------------
-//    Load a comma-separated or tab-separated file from disk
-// ----------------------------------------------------------------------------
-{
-    text rawData = getUrlRawData(self, url);
-
-    // Check if the file has already been loaded somehwere.
-    // If so, return the loaded data
-    GetUrlDataInfo *info = self->GetInfo<GetUrlDataInfo>();
-    if (!info)
-    {
-        // Create cache
-        info = new GetUrlDataInfo();
-        self->SetInfo<GetUrlDataInfo> (info);
-    }
-
-    // Record what state we were in
-    bool cached = info->source == rawData;
-    info->source = rawData;
-
-    std::istringstream input(rawData);
-    return xl_load_data(context, self, input, cached,
-                        prefix, fieldSeps, recordSeps);
 }
 
 

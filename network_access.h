@@ -26,5 +26,3 @@
 
 using namespace XL;
 Text_p getUrlText(Tree_p self, Text_p url);
-Tree_p getUrlData(Context *context, Tree *self,
-                  Text_p url, text prefix, text fieldSeps, text recordSeps);
