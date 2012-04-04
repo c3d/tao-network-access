@@ -27,20 +27,3 @@ PREFIX(GetUrlText,  text, "get_url_text",
        return getUrlText(self, &UrlValue),
        GROUP(module.Netaccesss)
        SYNOPSIS("Get text from the given URL."))
-
-PREFIX(GetUrlData,  tree, "get_url_data",
-       PARM(url, text, )
-       PARM(p, text, "Prefix to apply")
-       PARM(fs, text, "Field separator")
-       PARM(rs, text, "Row separator"),
-       return getUrlData(context, self, &url, p, fs, rs),
-       GROUP(module.Netaccesss)
-       SYNOPSIS("Get text from the given URL."))
-
-PREFIX(GetUrlCSV,  tree, "get_url_csv",
-       PARM(url, text, )
-       PARM(p, text, "Prefix to apply"),
-       return getUrlData(context, self, &url, p, ",;", "\n\f\r"),
-       GROUP(module.Netaccesss)
-       SYNOPSIS("Get text from the given URL."))
-
