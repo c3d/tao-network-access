@@ -22,6 +22,7 @@
 #include "tao/tao_utf8.h"
 #include "tao/tao_info.h"
 #include "tao/module_api.h"
+#include <sstream>
 #include <QtNetwork>
 #include <map>
 
@@ -70,7 +71,7 @@ static bool hasLicence()
 }
 
 
-Text_p getUrlText(Tree_p self, Text_p urlText)
+text getUrlRawData(Tree_p self, Text_p urlText)
 // ----------------------------------------------------------------------------
 //   State machine to complete a network request repeatedly
 // ----------------------------------------------------------------------------
@@ -120,8 +121,17 @@ Text_p getUrlText(Tree_p self, Text_p urlText)
     text result = (hasLicence() || tao->blink(1.5, 1.0, 300))
         ? rr.result
         : "[Unlicenced]";
+    return result;
+}
 
+
+Text_p getUrlText(Tree_p self, Text_p urlText)
+// ----------------------------------------------------------------------------
+//   Interface to XL runtime
+// ----------------------------------------------------------------------------
+{
     // Build a text with the result
+    text result = getUrlRawData(self, urlText);
     return new Text(result, "\"", "\"", self->Position());
 }
 
@@ -207,6 +217,44 @@ text errorText(QNetworkReply::NetworkError error)
     default:
         return "unknown error";
     }
+}
+
+
+struct GetUrlDataInfo : XL::Info
+// ----------------------------------------------------------------------------
+//   Information about the data that was loaded
+// ----------------------------------------------------------------------------
+{
+    GetUrlDataInfo() {}
+    text        source;
+};
+
+
+Tree_p getUrlData(Context *context, Tree *self,
+                  Text_p url, text prefix, text fieldSeps, text recordSeps)
+// ----------------------------------------------------------------------------
+//    Load a comma-separated or tab-separated file from disk
+// ----------------------------------------------------------------------------
+{
+    text rawData = getUrlRawData(self, url);
+
+    // Check if the file has already been loaded somehwere.
+    // If so, return the loaded data
+    GetUrlDataInfo *info = self->GetInfo<GetUrlDataInfo>();
+    if (!info)
+    {
+        // Create cache
+        info = new GetUrlDataInfo();
+        self->SetInfo<GetUrlDataInfo> (info);
+    }
+
+    // Record what state we were in
+    bool cached = info->source == rawData;
+    info->source = rawData;
+
+    std::istringstream input(rawData);
+    return xl_load_data(context, self, input, cached,
+                        prefix, fieldSeps, recordSeps);
 }
 
 
