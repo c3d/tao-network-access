@@ -66,7 +66,7 @@ static bool hasLicence()
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
 {
-    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.001");
+    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.0");
     return result;
 }
 
@@ -121,9 +121,6 @@ text getUrlRawData(Tree_p self, Text_p urlText)
     text result = (hasLicence() || tao->blink(1.5, 1.0, 300))
         ? rr.result
         : "[Unlicenced]";
-
-    IFTRACE(netaccess)
-        std::cerr << "URL " << urlText->value << ": " << rr.result << "\n";
     return result;
 }
 
