@@ -45,7 +45,7 @@ public:
     struct RequestReply
     {
         RequestReply() : reply(NULL), result() {}
-        ~RequestReply() { if (reply) reply->deleteLater(); }
+        ~RequestReply() { reply->deleteLater(); }
         QNetworkReply *         reply;
         text                    result;
     };
@@ -61,12 +61,12 @@ public:
 static text errorText(QNetworkReply::NetworkError error);
 
 
-static bool hasLicense()
+static bool hasLicence()
 // ----------------------------------------------------------------------------
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
 {
-    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.003");
+    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.0");
     return result;
 }
 
@@ -88,7 +88,7 @@ text getUrlRawData(Tree_p self, Text_p urlText)
     NetworkAccessInfo::RequestReply &rr = info->pending[urlText->value];
     if (!rr.reply)
     {
-        QUrl url(+urlText->value);
+        QUrl url = QUrl(+urlText->value);
         QNetworkRequest req(url);
         rr.reply = info->network.get(req);
     }
@@ -101,9 +101,7 @@ text getUrlRawData(Tree_p self, Text_p urlText)
         // No error, get data
         if (reply->isFinished())
         {
-            QByteArray rawData = reply->readAll();
-            QString text = QString::fromUtf8(rawData.constData(),
-                                             rawData.size());
+            QString text(reply->readAll());
             rr.result = +text;
             reply->deleteLater();
             rr.reply = NULL;
@@ -120,8 +118,9 @@ text getUrlRawData(Tree_p self, Text_p urlText)
     } // Error cases
 
     // Licence check
-    hasLicense();
-    text result = rr.result;
+    text result = (hasLicence() || tao->blink(1.5, 1.0, 300))
+        ? rr.result
+        : "[Unlicenced]";
 
     IFTRACE(netaccess)
         std::cerr << "URL " << urlText->value << ": " << rr.result << "\n";

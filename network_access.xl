@@ -25,7 +25,7 @@ module_description
     description "Tools to access network data"
     author "Taodyne SAS"
     website "http://www.taodyne.com"
-    version 1.003
+    version 1.0
 
 module_description "fr",
     name "Accès réseau"
