@@ -66,7 +66,7 @@ static bool hasLicence()
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
 {
-    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.001");
+    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.0");
     return result;
 }
 
