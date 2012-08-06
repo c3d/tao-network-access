@@ -61,7 +61,7 @@ public:
 static text errorText(QNetworkReply::NetworkError error);
 
 
-static bool hasLicence()
+static bool hasLicense()
 // ----------------------------------------------------------------------------
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
@@ -118,9 +118,8 @@ text getUrlRawData(Tree_p self, Text_p urlText)
     } // Error cases
 
     // Licence check
-    text result = (hasLicence() || tao->blink(1.5, 1.0, 300))
-        ? rr.result
-        : "[Unlicenced]";
+    hasLicense();
+    text result = rr.result;
 
     IFTRACE(netaccess)
         std::cerr << "URL " << urlText->value << ": " << rr.result << "\n";
