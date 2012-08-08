@@ -88,7 +88,7 @@ text getUrlRawData(Tree_p self, Text_p urlText)
     NetworkAccessInfo::RequestReply &rr = info->pending[urlText->value];
     if (!rr.reply)
     {
-        QUrl url(+urlText->value);
+        QUrl url = QUrl(+urlText->value);
         QNetworkRequest req(url);
         rr.reply = info->network.get(req);
     }

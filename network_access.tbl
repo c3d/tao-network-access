@@ -20,6 +20,8 @@
 //  (C) 2011 Taodyne SAS
 // ****************************************************************************
 
+#include "network_access.h"
+
 PREFIX(GetUrlText,  text, "get_url_text",
        PARM(UrlValue, text, ),
        return getUrlText(self, &UrlValue),
