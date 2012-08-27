@@ -66,7 +66,7 @@ static bool hasLicense()
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
 {
-    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.002");
+    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.001");
     return result;
 }
 
@@ -101,9 +101,7 @@ text getUrlRawData(Tree_p self, Text_p urlText)
         // No error, get data
         if (reply->isFinished())
         {
-            QByteArray rawData = reply->readAll();
-            QString text = QString::fromUtf8(rawData.constData(),
-                                             rawData.size());
+            QString text(reply->readAll());
             rr.result = +text;
             reply->deleteLater();
             rr.reply = NULL;
