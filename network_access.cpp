@@ -101,7 +101,9 @@ text getUrlRawData(Tree_p self, Text_p urlText)
         // No error, get data
         if (reply->isFinished())
         {
-            QString text(reply->readAll());
+            QByteArray rawData = reply->readAll();
+            QString text = QString::fromUtf8(rawData.constData(),
+                                             rawData.size());
             rr.result = +text;
             reply->deleteLater();
             rr.reply = NULL;
