@@ -45,7 +45,7 @@ public:
     struct RequestReply
     {
         RequestReply() : reply(NULL), result() {}
-        ~RequestReply() { reply->deleteLater(); }
+        ~RequestReply() { if (reply) reply->deleteLater(); }
         QNetworkReply *         reply;
         text                    result;
     };
