@@ -45,7 +45,7 @@ public:
     struct RequestReply
     {
         RequestReply() : reply(NULL), result() {}
-        ~RequestReply() { reply->deleteLater(); }
+        ~RequestReply() { if (reply) reply->deleteLater(); }
         QNetworkReply *         reply;
         text                    result;
     };
@@ -66,7 +66,7 @@ static bool hasLicense()
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
 {
-    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.002");
+    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.003");
     return result;
 }
 
