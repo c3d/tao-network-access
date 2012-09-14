@@ -45,7 +45,7 @@ public:
     struct RequestReply
     {
         RequestReply() : reply(NULL), result() {}
-        ~RequestReply() { reply->deleteLater(); }
+        ~RequestReply() { if (reply) reply->deleteLater(); }
         QNetworkReply *         reply;
         text                    result;
     };
@@ -66,7 +66,7 @@ static bool hasLicense()
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
 {
-    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.001");
+    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.003");
     return result;
 }
 
@@ -101,7 +101,9 @@ text getUrlRawData(Tree_p self, Text_p urlText)
         // No error, get data
         if (reply->isFinished())
         {
-            QString text(reply->readAll());
+            QByteArray rawData = reply->readAll();
+            QString text = QString::fromUtf8(rawData.constData(),
+                                             rawData.size());
             rr.result = +text;
             reply->deleteLater();
             rr.reply = NULL;
