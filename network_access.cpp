@@ -66,7 +66,7 @@ static bool hasLicense()
 //   Check if we have a valid licence for this feature
 // ----------------------------------------------------------------------------
 {
-    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.004");
+    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.003");
     return result;
 }
 
@@ -257,7 +257,7 @@ Tree_p getUrlData(Context *context, Tree *self,
     info->source = rawData;
 
     std::istringstream input(rawData);
-    return xl_load_data(context, self, url->value, input, cached, false,
+    return xl_load_data(context, self, input, cached,
                         prefix, fieldSeps, recordSeps);
 }
 
