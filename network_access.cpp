@@ -257,7 +257,7 @@ Tree_p getUrlData(Context *context, Tree *self,
     info->source = rawData;
 
     std::istringstream input(rawData);
-    return xl_load_data(context, self, input, cached,
+    return xl_load_data(context, self, url->value, input, cached,
                         prefix, fieldSeps, recordSeps);
 }
 
