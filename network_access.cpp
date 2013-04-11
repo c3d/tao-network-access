@@ -61,6 +61,16 @@ public:
 static text errorText(QNetworkReply::NetworkError error);
 
 
+static bool hasLicense()
+// ----------------------------------------------------------------------------
+//   Check if we have a valid licence for this feature
+// ----------------------------------------------------------------------------
+{
+    static bool result = tao->checkImpressOrLicense("NetworkAccess 1.004");
+    return result;
+}
+
+
 text getUrlRawData(Tree_p self, Text_p urlText)
 // ----------------------------------------------------------------------------
 //   State machine to complete a network request repeatedly
@@ -109,6 +119,8 @@ text getUrlRawData(Tree_p self, Text_p urlText)
         rr.reply = NULL;
     } // Error cases
 
+    // Licence check
+    hasLicense();
     text result = rr.result;
 
     IFTRACE(netaccess)

@@ -29,3 +29,6 @@ QT          += core \
                network
 
 INSTALLS    += thismod_icon
+
+LICENSE_FILES = network_access.taokey.notsigned
+include(../licenses.pri)
